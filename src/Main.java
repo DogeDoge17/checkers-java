@@ -40,18 +40,19 @@ public class Main {
 				else if (board[i][j] == 1)
 					System.out.print('X');
 				else if (board[i][j] == -1)
-					System.out.print("𝕏");
+					System.out.print("ð�•�");
 				else if (board[i][j] == -2)
 					System.out.print('0');
 				else
-					System.out.print(swap ? '█' : '░');
+					//System.out.print(swap ? "" : ' ');
+					 System.out.print(swap ? " " : "█");
 				swap = !swap;
 			}
 			swap = !swap;
 
 			System.out.println(" " + i);
-		}
-		System.out.print("  ");
+	  }
+	  System.out.print("  ");
 
       for(int i = 1; i <= board.length; i++) System.out.print(i);
 		

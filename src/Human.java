@@ -19,16 +19,11 @@ public class Human extends Player {
         }
     }
 
-    @Override
-    public void makeMove() {
-        Scanner s = new Scanner(System.in);
-        ArrayList<Vector2[]> attacks = null;
-        if((attacks = checkAttacks()).size() > 0) {
-            System.out.println(String.format("You have %d attacks you must make.", attacks.size()));
-        }        
-        Vector2 to = null;
-        Vector2 from = null;
-        boolean valid = true;
+    private Vector2[] pollInput() {
+        @SuppressWarnings("resource")
+		Scanner s = new Scanner(System.in);
+    	Vector2[] movement =new Vector2[2];
+    	boolean valid = true;
         do{
             if(!valid){
                 System.out.println(getError());
@@ -46,53 +41,46 @@ public class Human extends Player {
             else
                 moves = raw.split("[,\\.\\s]");
 
-
             if(moves.length < 2) {
                 setError("Enter two coords.");
                 valid = false;
                 continue;
             }
 
-            if((from = stringToPoint(moves[0])) == null){
+            if((movement[0] = stringToPoint(moves[0])) == null){
                 setError("Invalid move syntax (" + moves[0] + ")");
                 valid = false;
                 continue;
             }
 
-            if((to = stringToPoint(moves[1])) == null) {
+            if((movement[1] = stringToPoint(moves[1])) == null) {
                 setError("Invalid move syntax (" + moves[1] + ")");
                 valid = false;
                 continue;
             }
 
-
-            /* if(Math.abs(from.valueOf(Main.getBoard())) != getTeam() && from.valueOf(Main.getBoard()) != 0)  {
-                System.out.println("You may not move an enemy piece.");
-                continue;
-            }else if (Math.abs(from.valueOf(Main.getBoard())) != getTeam()){
-                System.out.println("Your selected piece is empty.");
+        }while(!(valid && (valid = validateMove(movement[0], movement[1]))));
+        return movement;
+    }
+    
+    @Override
+    public void makeMove() {
+        ArrayList<Vector2[]> attacks = null;
+        if((attacks = checkAttacks()).size() > 0) {
+            System.out.println(String.format("You have %d attack(s) you must make.", attacks.size()));
+            
+            for(int i = 0; i < attacks.size(); i++){            	
+            	System.out.printf("%s => %s%s", attacks.get(i)[0], attacks.get(i)[1], i == attacks.size()-1 ? ""  : ", ");            	
             }
-
-            if () {
-                System.out.println("You may not move an enemy piece.");
-            } */
-
-            /* while(true) {
-                System.out.print("Select piece: ");
-                from = stringToPoint(s.nextLine());
-                if (from != null)
-                    break;
-                System.out.println("Invalid move.");
-            }
-
-            while(true) {
-                System.out.print("Move to: ");
-                to = stringToPoint(s.nextLine());
-                if (to != null)
-                    break;
-                System.out.println("Invalid move.");
-            } */
-        }while(!(valid && (valid = validateMove(from, to))));
+            System.out.println();
+        }        
+        Vector2 from = null;
+        Vector2 to = null;
+        
+        Vector2[] results = pollInput();
+        from = results[0];
+        to = results[1];
+        
         movePiece(from, to);
 
     }    

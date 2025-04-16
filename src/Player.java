@@ -5,6 +5,7 @@ public abstract class Player {
 	private String error;
 
 	public static Player playerFactory(int team) {
+		@SuppressWarnings("resource")
 		Scanner s = new Scanner(System.in);
 		while (true){
 			System.out.print(String.format("Player %d mode ([%c]uman, [%c]omputer): ", team, team == 1 ? 'H' : 'h', team == 2 ? 'C' : 'c'));
@@ -15,7 +16,7 @@ public abstract class Player {
 				return new Computer((byte)team);
 			}
 			System.out.println("Try again.");
-		}
+		}		
 	}
 
 	public Player(byte team) {
@@ -106,6 +107,11 @@ public abstract class Player {
 			return false;
 		}
 
+		if(from.valueOf(Main.getBoard()) > 0 && ((team == 1 && to.getY() - from.getY() > 0) || (team == 2 && to.getY() - from.getY() < 0))) {
+			setError("Only kings can move backwards.");
+			return false;
+		}		
+		
 		if(to.getX() == from.getX() || to.getY() == from.getY()){
 			setError("You have to move diagonally.");
 			return false;			
