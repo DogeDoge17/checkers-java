@@ -38,32 +38,7 @@ public abstract class Player {
 	public abstract void makeMove();	
 
 	public ArrayList<Vector2[]> checkAttacks() {
-		ArrayList<Vector2[]> found = new ArrayList<>();
-
-		int otherTeam = team == 1 ? 2 : 1;
-
-		for(int i = 0; i < Main.getBoard().length; i++){
-			for(int j = 0; j < Main.getBoard()[i].length; j++) {
-				if(Math.abs(Main.getBoard()[i][j]) != team)
-					continue;
-				for(int k = -1; k <= 1; k += 2) {
-					for(int l = -1; l <= 1; l += 2)  {
-						if((i + k > 0 && i + k < Main.getBoard().length)
-							&& (j + l > 0 && j + l < Main.getBoard()[i + k].length)
-						 	&& Math.abs(Main.getBoard()[i+k][j+l]) == otherTeam) {
-							Vector2 from = new Vector2(j,i);
-							Vector2 to = new Vector2(j + l*2, i + k*2);
-
-							if(validateMove(from, to))
-								found.add(new Vector2[] {from, to});
-						}
-					}
-				}
-				// if(i - 2 > 0 && j - 2 > 0 && Main.getBoard()[i-2][j-2] == otherTeam)					
-			}		
-		}
-
-		return found;
+		return findMoves(true);
 	}
 
 	public boolean chainable(Vector2 to) {
@@ -93,6 +68,47 @@ public abstract class Player {
 
 	public boolean atEdge(Vector2 piece) {
 		return piece.getY() <= 0 || piece.getY() >= 7;
+	}
+
+	public ArrayList<Vector2[]> findAnyMoves(boolean onlyAttacks) {
+		return findMoves(false);
+	}
+
+	public ArrayList<Vector2[]> findMoves(boolean onlyAttacks) {
+		ArrayList<Vector2[]> found = new ArrayList<>();
+
+		int otherTeam = team == 1 ? 2 : 1;
+
+		for(int i = 0; i < Main.getBoard().length; i++){
+			for(int j = 0; j < Main.getBoard()[i].length; j++) {
+				if(Math.abs(Main.getBoard()[i][j]) != team)
+					continue;
+
+				for(int k = -1; k <= 1; k += 2) {					
+					for(int l = -1; l <= 1; l += 2)  {							
+						if((i + k > 0 && i + k < Main.getBoard().length)
+							&& (j + l > 0 && j + l < Main.getBoard()[i + k].length)) {
+							int step;
+							if(Math.abs(Main.getBoard()[i+k][j+l]) == otherTeam){
+								step = 2;
+							} else if (!onlyAttacks && Main.getBoard()[i+k][j+l] == 0){
+								step = 1;
+							}else
+								continue;
+
+							Vector2 from = new Vector2(j,i);
+							Vector2 to = new Vector2(j + l*step, i + k*step);
+	
+							if(validateMove(from, to))
+								found.add(new Vector2[] {from, to});
+						}
+					}
+				}
+				// if(i - 2 > 0 && j - 2 > 0 && Main.getBoard()[i-2][j-2] == otherTeam)					
+			}		
+		}
+
+		return found;
 	}
 
 	public boolean validateMove(Vector2 from, Vector2 to) {

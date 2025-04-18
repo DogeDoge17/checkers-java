@@ -76,8 +76,16 @@ public class Human extends Player {
         }        
         Vector2 from = null;
         Vector2 to = null;
-        
-        Vector2[] results = pollInput();
+        Vector2[] results;
+        do{
+             results = pollInput();
+
+            if(attacks.size() > 0)
+                break;
+
+            // check if move is an attack.
+            // for( : ); 
+        }while(true);
         from = results[0];
         to = results[1];
         
