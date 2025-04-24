@@ -37,10 +37,6 @@ public abstract class Player {
 
 	public abstract void makeMove();	
 
-	public ArrayList<Vector2[]> checkAttacks() {
-		return findMoves(true);
-	}
-
 	public boolean chainable(Vector2 to) {
 		return false;
 	}
@@ -59,7 +55,7 @@ public abstract class Player {
 		if (isAttack(from, to))
 			Main.getBoard()[(from.getY() + to.getY())/2][(from.getX() + to.getX())/2] = 0;
 
-		System.out.println(to.valueOf(Main.getBoard()));
+		// System.out.println(to.valueOf(Main.getBoard()));
 		if(atEdge(to) && to.valueOf(Main.getBoard()) > 0) {
 			Main.getBoard()[to.getY()][to.getX()] *= -1;
 			// System.out.println("Upgrading piece " + to);
@@ -70,11 +66,38 @@ public abstract class Player {
 		return piece.getY() <= 0 || piece.getY() >= 7;
 	}
 
-	public ArrayList<Vector2[]> findAnyMoves(boolean onlyAttacks) {
-		return findMoves(false);
-	}
+	public ArrayList<Vector2[]> checkAttacks(Vector2 filter) {
+		ArrayList<Vector2[]> found = new ArrayList<>();
+		// int otherTeam = team == 1 ? 2 : 1;
 
-	public ArrayList<Vector2[]> findMoves(boolean onlyAttacks) {
+		for(int i = 0; i < Main.getBoard().length; i++){
+			for(int j = 0; j < Main.getBoard()[i].length; j++) {
+				if(Math.abs(Main.getBoard()[i][j]) != team)
+					continue;
+
+				for(int k = -1; k <= 1; k += 2) {					
+					for(int l = -1; l <= 1; l += 2)  {							
+						if((i + k > 0 && i + k < Main.getBoard().length)
+							&& (j + l > 0 && j + l < Main.getBoard()[i + k].length)) {
+
+							if((team == 1 && k < 0) || (team == 2 && k > 0)) // only kings move backwards
+								if(Main.getBoard()[i+k][j+l] < 0)
+									continue;														
+
+							Vector2 from = new Vector2(j,i);
+							if(filter != null && !from.equals(filter))
+								continue;
+							Vector2 to = new Vector2(j + l*2, i + k*2);								
+							if(validateMove(from, to))
+								found.add(new Vector2[] {from, to});
+						}
+					}
+				}				
+			}		
+		}
+		return found;
+	}
+	public ArrayList<Vector2[]> findMoves() {
 		ArrayList<Vector2[]> found = new ArrayList<>();
 
 		int otherTeam = team == 1 ? 2 : 1;
@@ -86,12 +109,19 @@ public abstract class Player {
 
 				for(int k = -1; k <= 1; k += 2) {					
 					for(int l = -1; l <= 1; l += 2)  {							
-						if((i + k > 0 && i + k < Main.getBoard().length)
+						if((i + k > 0 && i + k < Main.getBoard().length) // bounds check
 							&& (j + l > 0 && j + l < Main.getBoard()[i + k].length)) {
+
+							if((team == 1 && k < 0) || (team == 2 && k > 0)){
+								if(Main.getBoard()[i+k][j+l] < 0){
+									continue;
+								}
+							}
+
 							int step;
 							if(Math.abs(Main.getBoard()[i+k][j+l]) == otherTeam){
 								step = 2;
-							} else if (!onlyAttacks && Main.getBoard()[i+k][j+l] == 0){
+							} else if (Main.getBoard()[i+k][j+l] == 0){
 								step = 1;
 							}else
 								continue;
@@ -103,8 +133,7 @@ public abstract class Player {
 								found.add(new Vector2[] {from, to});
 						}
 					}
-				}
-				// if(i - 2 > 0 && j - 2 > 0 && Main.getBoard()[i-2][j-2] == otherTeam)					
+				}				
 			}		
 		}
 

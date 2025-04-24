@@ -41,4 +41,8 @@ public class Vector2 {
 	public String toString() {		
 		return String.format("%c%d", Main.coordToLetter(y), x+1); //String.format("(%d, %d)", x, y);
 	}
+
+	public boolean equals(Vector2  other) {
+		return getX() == other.getX() && getY() == other.getY();
+	}
 }

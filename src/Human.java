@@ -63,33 +63,56 @@ public class Human extends Player {
         return movement;
     }
     
+    private ArrayList<Vector2[]> promptAttacks(Vector2 lastPiece) {
+        ArrayList<Vector2[]> attacks = null;
+        if((attacks = checkAttacks(lastPiece)).size() > 0) {
+            System.out.println(String.format("You have %d attack%s you must make.", attacks.size(), attacks.size() == 1 ? "" : "s"));
+            
+            for(int i = 0; i < attacks.size(); i++) {                
+                System.out.printf("%s => %s%s", attacks.get(i)[0], attacks.get(i)[1], i == attacks.size()-1 ? ""  : ", ");              
+            }            
+            System.out.println();
+        }   
+        return attacks;
+    }
+
     @Override
     public void makeMove() {
-        ArrayList<Vector2[]> attacks = null;
-        if((attacks = checkAttacks()).size() > 0) {
-            System.out.println(String.format("You have %d attack(s) you must make.", attacks.size()));
-            
-            for(int i = 0; i < attacks.size(); i++){            	
-            	System.out.printf("%s => %s%s", attacks.get(i)[0], attacks.get(i)[1], i == attacks.size()-1 ? ""  : ", ");            	
-            }
-            System.out.println();
-        }        
+             
         Vector2 from = null;
         Vector2 to = null;
         Vector2[] results;
+        ArrayList<Vector2[]> attacks = null;
+        boolean finishedAttacking = false;
+        Vector2 lastPiece = null;
+        boolean firstTime = true;
         do{
-             results = pollInput();
+            Main.drawBoard();
+            if(!firstTime)
+                System.out.print(getError() + (getError().length() > 0 ? "\n" : ""));     
 
-            if(attacks.size() > 0)
-                break;
+            attacks = promptAttacks(lastPiece);
+            results = pollInput();
 
-            // check if move is an attack.
-            // for( : ); 
-        }while(true);
-        from = results[0];
-        to = results[1];
-        
-        movePiece(from, to);
+            if(attacks.size() > 0){                        
+                boolean isAttack = false;
+                for(Vector2[] attack : attacks) {
+                    if((isAttack = (attack[0].equals(results[0]) && attack[1].equals(results[1])))) {                    
+                        break;            
+                    }
+                }
+                if(!isAttack) {
+                    setError("You MUST make an attack.");
+                    firstTime = false;                
+                    continue;
+                }                 
+            }else
+                finishedAttacking = true;
 
+            from = results[0];
+            to = results[1];    
+            movePiece(from, to);
+            firstTime = false;            
+        } while(!finishedAttacking);            
     }    
 }
