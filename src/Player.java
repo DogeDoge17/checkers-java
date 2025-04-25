@@ -81,7 +81,7 @@ public abstract class Player {
 							&& (j + l > 0 && j + l < Main.getBoard()[i + k].length)) {
 
 							if((team == 1 && k < 0) || (team == 2 && k > 0)) // only kings move backwards
-								if(Main.getBoard()[i+k][j+l] < 0)
+								if(Main.getBoard()[i][j] > 0)
 									continue;														
 
 							Vector2 from = new Vector2(j,i);
@@ -97,6 +97,17 @@ public abstract class Player {
 		}
 		return found;
 	}
+
+	public int countPieces() {
+		int count = 0;
+		for(int i = 0; i < Main.getBoard().length; i++) 
+			for(int j = 0; j < Main.getBoard()[i].length; j++) 
+				if(Math.abs(Main.getBoard()[i][j]) == team)
+					count++;
+			
+		return count;
+	}
+
 	public ArrayList<Vector2[]> findMoves() {
 		ArrayList<Vector2[]> found = new ArrayList<>();
 
@@ -109,8 +120,8 @@ public abstract class Player {
 
 				for(int k = -1; k <= 1; k += 2) {					
 					for(int l = -1; l <= 1; l += 2)  {							
-						if((i + k > 0 && i + k < Main.getBoard().length) // bounds check
-							&& (j + l > 0 && j + l < Main.getBoard()[i + k].length)) {
+						if((i + k >= 0 && i + k < Main.getBoard().length) // bounds check
+							&& (j + l >= 0 && j + l < Main.getBoard()[i + k].length)) {
 
 							if((team == 1 && k < 0) || (team == 2 && k > 0)){
 								if(Main.getBoard()[i+k][j+l] < 0){
@@ -188,5 +199,9 @@ public abstract class Player {
 		}
 
 		return true;
+	}
+
+	public String toString() {
+		return getTeam() == 1 ? "X" : "O";
 	}
 }

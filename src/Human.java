@@ -20,8 +20,7 @@ public class Human extends Player {
     }
 
     private Vector2[] pollInput() {
-        @SuppressWarnings("resource")
-		Scanner s = new Scanner(System.in);
+        Scanner s = new Scanner(System.in);
     	Vector2[] movement =new Vector2[2];
     	boolean valid = true;
         do{
@@ -39,7 +38,7 @@ public class Human extends Player {
                 moves[1] = raw.substring(2,4);
             }
             else
-                moves = raw.split("[,\\.\\s]");
+                moves = raw.split("[,.\\s]");
 
             if(moves.length < 2) {
                 setError("Enter two coords.");
@@ -65,8 +64,8 @@ public class Human extends Player {
     
     private ArrayList<Vector2[]> promptAttacks(Vector2 lastPiece) {
         ArrayList<Vector2[]> attacks = null;
-        if((attacks = checkAttacks(lastPiece)).size() > 0) {
-            System.out.println(String.format("You have %d attack%s you must make.", attacks.size(), attacks.size() == 1 ? "" : "s"));
+        if(!(attacks = checkAttacks(lastPiece)).isEmpty()) {
+            System.out.printf("You have %d attack%s you must make.%n", attacks.size(), attacks.size() == 1 ? "" : "s");
             
             for(int i = 0; i < attacks.size(); i++) {                
                 System.out.printf("%s => %s%s", attacks.get(i)[0], attacks.get(i)[1], i == attacks.size()-1 ? ""  : ", ");              
@@ -79,22 +78,24 @@ public class Human extends Player {
     @Override
     public void makeMove() {
              
-        Vector2 from = null;
-        Vector2 to = null;
+        Vector2 from;
+        Vector2 to;
         Vector2[] results;
-        ArrayList<Vector2[]> attacks = null;
-        boolean finishedAttacking = false;
-        Vector2 lastPiece = null;
+        ArrayList<Vector2[]> attacks;
+        boolean singleRound = false;
+        Vector2 lastPiece;
         boolean firstTime = true;
+        Main.drawBoard();
+        attacks = promptAttacks(null);
         do{
-            Main.drawBoard();
-            if(!firstTime)
-                System.out.print(getError() + (getError().length() > 0 ? "\n" : ""));     
+            if(!firstTime){
+                Main.drawBoard();
+                System.out.print(getError() + (!getError().isEmpty() ? "\n" : ""));
+            }
 
-            attacks = promptAttacks(lastPiece);
             results = pollInput();
 
-            if(attacks.size() > 0){                        
+            if(!attacks.isEmpty()) {
                 boolean isAttack = false;
                 for(Vector2[] attack : attacks) {
                     if((isAttack = (attack[0].equals(results[0]) && attack[1].equals(results[1])))) {                    
@@ -106,13 +107,25 @@ public class Human extends Player {
                     firstTime = false;                
                     continue;
                 }                 
-            }else
-                finishedAttacking = true;
+            }else{
+                singleRound = true;            
+            }
 
             from = results[0];
             to = results[1];    
             movePiece(from, to);
-            firstTime = false;            
-        } while(!finishedAttacking);            
+            lastPiece = to;
+
+            if(!singleRound)
+                attacks = promptAttacks(lastPiece);
+            if(attacks.isEmpty())
+                break;
+
+            firstTime = false;
+        } while(!singleRound);            
     }    
+
+    public String toString(){
+        return String.format("Player %s (%s)", getTeam(), super.toString());
+    }
 }
