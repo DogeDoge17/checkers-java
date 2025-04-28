@@ -12,14 +12,19 @@ public class Computer extends Player {
         boolean singleRound = false;
         Main.drawBoard();
 
-        int thunks = (int)(Math.random() * 5) + 1;
+        
+
+        System.out.println("Thinking...");
+        try{ Thread.sleep(100); } catch (InterruptedException e) { }
+
+        /*int thunks = (int)(Math.random() * 5) + 1;
 
         while(thunks-- > 0) {
             for(int dots = 0; dots <= 3; dots++) {
                 System.out.printf("Thinking%s   \r", new String(new char[dots]).replace("\0", "."));
                 try{ Thread.sleep(10); } catch (InterruptedException e) { }
             }
-        }
+        }*/
         System.out.println();
         do {
             moves = checkAttacks(lastPiece);

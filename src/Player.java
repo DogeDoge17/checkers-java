@@ -153,6 +153,11 @@ public abstract class Player {
 
 	public boolean validateMove(Vector2 from, Vector2 to) {
 
+		if(from.getX() > 7 || from.getX() < 0 || from.getY() > 7 || to.getY() < 0 || to.getX() > 7 || to.getX() < 0 || to.getY() > 7 || to.getY() < 0) {
+			setError("Moving piece out of bounds");
+			return false;
+		}
+		
 		if(from.valueOf(Main.getBoard()) == 0) {
 			setError("You can't move an empty space.");
 			return false;
