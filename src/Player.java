@@ -80,7 +80,7 @@ public abstract class Player {
 						if((i + k > 0 && i + k < Main.getBoard().length)
 							&& (j + l > 0 && j + l < Main.getBoard()[i + k].length)) {
 
-							if((team == 1 && k < 0) || (team == 2 && k > 0)) // only kings move backwards
+							if((team == 1 && k > 0) || (team == 2 && k < 0)) // only kings move backwards
 								if(Main.getBoard()[i][j] > 0)
 									continue;														
 

@@ -21,7 +21,7 @@ public class Human extends Player {
 
     private Vector2[] pollInput() {
         Scanner s = new Scanner(System.in);
-    	Vector2[] movement =new Vector2[2];
+    	Vector2[] movement = new Vector2[2];
     	boolean valid = true;
         do{
             if(!valid){
@@ -31,7 +31,7 @@ public class Human extends Player {
 
             System.out.print("Make move: ");
             String[] moves;
-            String raw = s.nextLine().trim();
+            String raw = s.nextLine().trim().toLowerCase();
             if(raw.length() == 4) {
                 moves = new String[2];
                 moves[0] = raw.substring(0,2);
